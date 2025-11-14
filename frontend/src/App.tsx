@@ -9,7 +9,6 @@ function App() {
         <header>
           <Navbar bg="dark" variant='dark' expand='lg'>
             <Container className='mt-3'>
-
               <Navbar.Brand>Maparasante</Navbar.Brand>
             </Container>
             <Nav>
@@ -26,8 +25,8 @@ function App() {
           <Container className='mt-3'>
             <Row>
             {sampleProducts.map((product) => (
-              <Col key={product.slug}>
-                <img
+              <Col key={product.slug} sm={6} md={4} lg={3}>
+                <img 
                   src={product.image}
                   alt={product.name}
                   className="product-image"

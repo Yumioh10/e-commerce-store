@@ -1,0 +1,12 @@
+# Asset Images Directory
+
+Place images here that you want to import in your React components.
+These images will be processed by Vite and optimized during build.
+
+Example usage:
+```tsx
+import logo from '@/assets/images/logo.png'
+
+<img src={logo} alt="Logo" />
+```
+

@@ -1,0 +1,178 @@
+### 0. DEFINE ENVIRONMENT VARIABLES
+@baseUrl = http://localhost:4000/api/v1
+@token = {{authResponse.token}}
+@adminToken = {{adminAuthResponse.token}}
+@testUserId = user123
+@productId = 6654b9d5c411804b46c87a54
+@orderId = 6654b9d5c411804b46c87a66
+@couponCode = SAMPLE20
+
+################################################################################
+### 1. AUTHENTICATION & USER MANAGEMENT
+################################################################################
+
+# @name userRegister
+### 1.1 REGISTER A NEW REGULAR USER
+POST {{baseUrl}}/user/register
+Content-Type: application/json
+
+{
+    "name": "Sara hassani",
+    "email": "sara.hassani@example.com",
+    "password": "123"
+}
+
+# @name adminRegister
+### 1.2 REGISTER A NEW ADMIN USER (Optional: You may need to manually set role in DB)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "name": "Admin Sarah",
+    "email": "admin@example.com",
+    "password": "admin123!"
+}
+
+# @name userLogin
+### 1.3 LOGIN REGULAR USER (Saves token to @token variable)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "sarah@example.com",
+    "password": "password123"
+}
+
+@authResponse = {{userLogin.response.json}}
+
+# @name adminLogin
+### 1.4 LOGIN ADMIN USER (Saves token to @adminToken variable)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@example.com",
+    "password": "AdminPassword123!"
+}
+
+@adminAuthResponse = {{adminLogin.response.json}}
+
+################################################################################
+### 2. PRODUCT MANAGEMENT (ADMIN ONLY)
+################################################################################
+
+# @name createProduct
+### 2.1 ADMIN: CREATE NEW PRODUCT
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+    "name": "Luxury Hydrating Cream",
+    "description": "Deeply hydrates skin for 24 hours.",
+    "price": 49.99,
+    "stock": 150,
+    "category": "Face",
+    "brand": "CosmoLux"
+}
+
+@productResponse = {{createProduct.response.json}}
+@productId = {{productResponse.product._id}}
+
+### 2.2 PUBLIC: GET ALL PRODUCTS
+GET {{baseUrl}}/products
+Authorization: Bearer {{token}}
+
+### 2.3 PUBLIC: GET PRODUCT BY ID
+GET {{baseUrl}}/products/{{productId}}
+Authorization: Bearer {{token}}
+
+################################################################################
+### 3. CART MANAGEMENT (AUTHENTICATED USER)
+################################################################################
+
+### 3.1 USER: GET CART (Should be empty or newly created)
+GET {{baseUrl}}/cart
+Authorization: Bearer {{token}}
+
+### 3.2 USER: ADD ITEM TO CART
+POST {{baseUrl}}/cart/item
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "productId": "{{productId}}",
+    "quantity": 2
+}
+
+### 3.3 USER: REMOVE ITEM FROM CART
+DELETE {{baseUrl}}/cart/item/{{productId}}
+Authorization: Bearer {{token}}
+
+################################################################################
+### 4. PROMOTION MANAGEMENT
+################################################################################
+
+# @name createPromotion
+### 4.1 ADMIN: CREATE NEW PROMOTION
+POST {{baseUrl}}/promotions
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+    "code": "SAMPLE20",
+    "discountType": "percentage",
+    "discountValue": 20,
+    "expiresAt": "2026-12-31T23:59:59Z",
+    "isActive": true
+}
+
+### 4.2 USER: APPLY PROMOTION (Needs an item in the cart first)
+POST {{baseUrl}}/promotions/apply
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "couponCode": "SAMPLE20"
+}
+
+
+################################################################################
+### 5. ORDER MANAGEMENT
+################################################################################
+
+# @name createOrder
+### 5.1 USER: CREATE ORDER (Must have items in cart)
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "shippingAddress": {
+        "street": "123 Main St",
+        "city": "Beverly Hills",
+        "zipCode": "90210",
+        "country": "USA"
+    },
+    "paymentToken": "mock_payment_token_12345"
+}
+
+@orderResponse = {{createOrder.response.json}}
+@orderId = {{orderResponse.order._id}}
+
+### 5.2 USER: GET ALL MY ORDERS
+GET {{baseUrl}}/orders
+Authorization: Bearer {{token}}
+
+### 5.3 USER: GET SPECIFIC ORDER
+GET {{baseUrl}}/orders/{{orderId}}
+Authorization: Bearer {{token}}
+
+### 5.4 ADMIN: UPDATE ORDER STATUS (Requires adminToken)
+PUT {{baseUrl}}/orders/{{orderId}}/status
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+    "status": "shipped"
+}

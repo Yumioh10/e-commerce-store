@@ -1,0 +1,53 @@
+### 0. DEFINE ENVIRONMENT VARIABLES
+@baseUrl = http://localhost:4000/api/v1
+
+
+################################################################################
+### 1. AUTHENTICATION & USER MANAGEMENT
+################################################################################
+
+# @name userRegister
+### 1.1 REGISTER A NEW REGULAR USER
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "name": "Jane Doe",
+    "email": "jane.doe@example.com",
+    "password": "Password1234!"
+}
+
+# @name adminRegister
+### 1.2 REGISTER A NEW ADMIN USER (Optional: You may need to manually set role in DB)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "name": "Admin Smith",
+    "email": "admin@example.com",
+    "password": "AdminPassword123!"
+}
+
+# @name userLogin
+### 1.3 LOGIN REGULAR USER (Saves token to @token variable)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "jane.doe@example.com",
+    "password": "Password1234!"
+}
+
+@authResponse = {{userLogin.response.json}}
+
+# @name adminLogin
+### 1.4 LOGIN ADMIN USER (Saves token to @adminToken variable)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@example.com",
+    "password": "AdminPassword123!"
+}
+
+@adminAuthResponse = {{adminLogin.response.json}}

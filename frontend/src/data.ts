@@ -1,4 +1,4 @@
-import type { Product } from "./types/Product";
+import type { Product } from "./styles/Product";
 export const sampleProducts: Product[] = [
    {
       name: "BELLA AURORA ecran spf50 peau mixte à grasse",
