@@ -77,6 +77,14 @@ Content-Type: application/json
   "status": "processing"
 }
 
+### Get Orders by User ID (Admin Only)
+GET {{baseUrl}}/api/v1/orders/user/USER_ID_HERE
+Authorization: Bearer {{token}}
+
+### Delete Order (Admin Only)
+DELETE {{baseUrl}}/api/v1/orders/{{orderId}}
+Authorization: Bearer {{token}}
+
 ###############################################
 # SAMPLE DATA FOR TESTING
 ###############################################

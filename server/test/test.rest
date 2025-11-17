@@ -2,7 +2,7 @@
 @baseUrl = http://localhost:4000
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MWFmM2ZmMzY0N2Y4YTRmOTZhOTMyNiIsImlhdCI6MTc2MzM3NDA5OCwiZXhwIjoxNzYzOTc4ODk4fQ.6hH_eGyN1YTepl6QTFe2Q0SGVjaedrYZQCWXB9h0eY8
 @productId = 6919f86bd449abc13eb79bdd
-@orderId = ORD-F96A937F
+@orderId = 691aff193647f8a4f96a9399
 
 ###############################################
 # AUTH ROUTES
@@ -169,14 +169,6 @@ Authorization: Bearer {{token}}
 
 ### Cancel Order
 PUT {{baseUrl}}/api/v1/orders/{{orderId}}/cancel
-Authorization: Bearer {{token}}
-
-### Delete Order (Admin Only)
-DELETE {{baseUrl}}/api/v1/orders/{{orderId}}
-Authorization: Bearer {{token}}
-
-### Get Orders by User ID (Admin Only)
-GET {{baseUrl}}/api/v1/orders/user/USER_ID_HERE
 Authorization: Bearer {{token}}
 
 ### Get Order Invoice
