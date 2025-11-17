@@ -1,178 +1,255 @@
-### 0. DEFINE ENVIRONMENT VARIABLES
-@baseUrl = http://localhost:4000/api/v1
-@token = {{authResponse.token}}
-@adminToken = {{adminAuthResponse.token}}
-@testUserId = user123
-@productId = 6654b9d5c411804b46c87a54
-@orderId = 6654b9d5c411804b46c87a66
-@couponCode = SAMPLE20
+### Variables
+@baseUrl = http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MWFmM2ZmMzY0N2Y4YTRmOTZhOTMyNiIsImlhdCI6MTc2MzM3NDA5OCwiZXhwIjoxNzYzOTc4ODk4fQ.6hH_eGyN1YTepl6QTFe2Q0SGVjaedrYZQCWXB9h0eY8
+@productId = 6919f86bd449abc13eb79bdd
+@orderId = ORD-F96A937F
 
-################################################################################
-### 1. AUTHENTICATION & USER MANAGEMENT
-################################################################################
+###############################################
+# AUTH ROUTES
+###############################################
 
-# @name userRegister
-### 1.1 REGISTER A NEW REGULAR USER
-POST {{baseUrl}}/user/register
+### Register New User
+POST {{baseUrl}}/api/v1/auth/register
 Content-Type: application/json
 
 {
-    "name": "Sara hassani",
-    "email": "sara.hassani@example.com",
-    "password": "123"
+  "email": "yassine@example.com",
+  "password": "password123",
+  "firstName": "yassine",
+  "lastName": "ben"
 }
 
-# @name adminRegister
-### 1.2 REGISTER A NEW ADMIN USER (Optional: You may need to manually set role in DB)
-POST {{baseUrl}}/auth/register
+### Login User
+POST {{baseUrl}}/api/v1/auth/login
 Content-Type: application/json
 
 {
-    "name": "Admin Sarah",
-    "email": "admin@example.com",
-    "password": "admin123!"
+  "email": "yassine@example.com",
+  "password": "password123"
 }
 
-# @name userLogin
-### 1.3 LOGIN REGULAR USER (Saves token to @token variable)
-POST {{baseUrl}}/auth/login
+### Get Current User Profile
+GET {{baseUrl}}/api/v1/auth/me
+Authorization: Bearer {{token}}
+
+### Update User Profile
+PUT {{baseUrl}}/api/v1/auth/profile
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "email": "sarah@example.com",
-    "password": "password123"
+  "lastName": "Elmardi"
 }
 
-@authResponse = {{userLogin.response.json}}
-
-# @name adminLogin
-### 1.4 LOGIN ADMIN USER (Saves token to @adminToken variable)
-POST {{baseUrl}}/auth/login
+### Change Password
+PUT {{baseUrl}}/api/v1/auth/password
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "email": "admin@example.com",
-    "password": "AdminPassword123!"
+  "currentPassword": "password123",
+  "newPassword": "newpassword456"
 }
 
-@adminAuthResponse = {{adminLogin.response.json}}
+### Logout
+POST {{baseUrl}}/api/v1/auth/logout
+Authorization: Bearer {{token}}
 
-################################################################################
-### 2. PRODUCT MANAGEMENT (ADMIN ONLY)
-################################################################################
+### Add Product to Wishlist
+POST {{baseUrl}}/api/v1/auth/wishlist/{{productId}}
+Authorization: Bearer {{token}}
 
-# @name createProduct
-### 2.1 ADMIN: CREATE NEW PRODUCT
-POST {{baseUrl}}/products
+### Remove Product from Wishlist
+DELETE {{baseUrl}}/api/v1/auth/wishlist/{{productId}}
+Authorization: Bearer {{token}}
+
+### Get User Wishlist
+GET {{baseUrl}}/api/v1/auth/wishlist
+Authorization: Bearer {{token}}
+
+###############################################
+# PRODUCT ROUTES
+###############################################
+
+### Get All Products (Basic)
+GET {{baseUrl}}/api/v1/products
+
+### Get Products with Pagination
+GET {{baseUrl}}/api/v1/products?page=1&limit=3
+
+### Get Products with Search
+GET {{baseUrl}}/api/v1/products?search=moisturizer
+
+### Get Products with Category Filter
+GET {{baseUrl}}/api/v1/products?category=skincare
+
+### Get Products with Price Range Filter
+GET {{baseUrl}}/api/v1/products?minPrice=100&maxPrice=180
+
+### Get Products with Multiple Filters
+GET {{baseUrl}}/api/v1/products?category=skincare&brand=CeraVe&minPrice=10&maxPrice=100&minRating=4&inStock=true&page=1&limit=12
+
+### Get Products with Search and Filters Combined
+GET {{baseUrl}}/api/v1/products?search=serum&category=skincare&minPrice=20&maxPrice=100&page=1&limit=10
+
+### Get Products Sorted by Price (Ascending)
+GET {{baseUrl}}/api/v1/products?sortBy=price&order=asc
+
+### Get Products Sorted by Price (Descending)
+GET {{baseUrl}}/api/v1/products?sortBy=price&order=desc
+
+### Get Products Sorted by Newest First
+GET {{baseUrl}}/api/v1/products?sortBy=createdAt&order=desc
+
+### Get Products by Multiple Brands
+GET {{baseUrl}}/api/v1/products?brand=CeraVe,MAC,OGX
+
+### Get In-Stock Products Only
+GET {{baseUrl}}/api/v1/products?inStock=true
+
+### Get Search Suggestions (Autocomplete)
+GET {{baseUrl}}/api/v1/products/search/suggestions?q=moist&limit=5
+
+### Get Featured Products
+GET {{baseUrl}}/api/v1/products/featured?limit=8
+
+### Get Products by Category
+GET {{baseUrl}}/api/v1/products/category/haircare?page=1&limit=12
+
+### Get Available Filters
+GET {{baseUrl}}/api/v1/products/filters/available
+
+### Get Product Count by Category
+GET {{baseUrl}}/api/v1/products/stats/category-count
+
+### Get Single Product
+GET {{baseUrl}}/api/v1/products/{{productId}}
+
+### Get Related Products
+GET {{baseUrl}}/api/v1/products/{{productId}}/related?limit=4
+
+
+
+
+###############################################
+# ORDER ROUTES
+###############################################
+
+### Create New Order
+POST {{baseUrl}}/api/v1/orders
+Authorization: Bearer {{token}}
 Content-Type: application/json
-Authorization: Bearer {{adminToken}}
 
 {
-    "name": "Luxury Hydrating Cream",
-    "description": "Deeply hydrates skin for 24 hours.",
-    "price": 49.99,
-    "stock": 150,
-    "category": "Face",
-    "brand": "CosmoLux"
+  "items": [
+    {
+      "productId": "{{productId}}",
+      "quantity": 2,
+      "price": 14.99
+    }
+  ],
+  "shippingAddress": {
+    "street": "123 Main Street",
+    "city": "New York",
+    "state": "NY",
+    "zipCode": "10001",
+    "country": "USA",
+    "isDefault": true
+  },
+  "paymentMethod": "credit_card"
 }
 
-@productResponse = {{createProduct.response.json}}
-@productId = {{productResponse.product._id}}
-
-### 2.2 PUBLIC: GET ALL PRODUCTS
-GET {{baseUrl}}/products
+### Get All Orders (User sees own, Admin sees all)
+GET {{baseUrl}}/api/v1/orders
 Authorization: Bearer {{token}}
 
-### 2.3 PUBLIC: GET PRODUCT BY ID
-GET {{baseUrl}}/products/{{productId}}
+### Get Single Order
+GET {{baseUrl}}/api/v1/orders/{{orderId}}
 Authorization: Bearer {{token}}
 
-################################################################################
-### 3. CART MANAGEMENT (AUTHENTICATED USER)
-################################################################################
-
-### 3.1 USER: GET CART (Should be empty or newly created)
-GET {{baseUrl}}/cart
+### Cancel Order
+PUT {{baseUrl}}/api/v1/orders/{{orderId}}/cancel
 Authorization: Bearer {{token}}
 
-### 3.2 USER: ADD ITEM TO CART
-POST {{baseUrl}}/cart/item
+### Delete Order (Admin Only)
+DELETE {{baseUrl}}/api/v1/orders/{{orderId}}
+Authorization: Bearer {{token}}
+
+### Get Orders by User ID (Admin Only)
+GET {{baseUrl}}/api/v1/orders/user/USER_ID_HERE
+Authorization: Bearer {{token}}
+
+### Get Order Invoice
+GET {{baseUrl}}/api/v1/orders/{{orderId}}/invoice
+Authorization: Bearer {{token}}
+
+###############################################
+# SAMPLE DATA FOR TESTING
+###############################################
+
+### Create Multiple Products (Admin)
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{token}}
 Content-Type: application/json
-Authorization: Bearer {{token}}
 
 {
-    "productId": "{{productId}}",
-    "quantity": 2
+  "name": "Vitamin C Serum",
+  "brand": "The Ordinary",
+  "category": "skincare",
+  "price": 25.50,
+  "description": "Brightening serum with pure vitamin C to reduce signs of aging.",
+  "ingredients": ["Ascorbic Acid", "Vitamin E", "Ferulic Acid"],
+  "images": ["https://media-pierre-fabre.wedia-group.com/api/wedia/dam/transform/u5wa3z31qn5sjdn8unq3c9yxzfzqs3j7ehhxe4o/pf_square/u5wa3z31qn5sjdn8unq3c9yxzfzqs3j7ehhxe4o?t=resize&width=800&height=800"],
+  "stock": 75
 }
 
-### 3.3 USER: REMOVE ITEM FROM CART
-DELETE {{baseUrl}}/cart/item/{{productId}}
+###
+
+POST {{baseUrl}}/api/v1/products
 Authorization: Bearer {{token}}
-
-################################################################################
-### 4. PROMOTION MANAGEMENT
-################################################################################
-
-# @name createPromotion
-### 4.1 ADMIN: CREATE NEW PROMOTION
-POST {{baseUrl}}/promotions
 Content-Type: application/json
-Authorization: Bearer {{adminToken}}
 
 {
-    "code": "SAMPLE20",
-    "discountType": "percentage",
-    "discountValue": 20,
-    "expiresAt": "2026-12-31T23:59:59Z",
-    "isActive": true
+  "name": "Matte Lipstick",
+  "brand": "MAC",
+  "category": "makeup",
+  "price": 19.00,
+  "description": "Long-lasting matte lipstick in vibrant red.",
+  "ingredients": ["Dimethicone", "Pigments", "Vitamin E"],
+  "images": ["https://example.com/lipstick.jpg"],
+  "stock": 200
 }
 
-### 4.2 USER: APPLY PROMOTION (Needs an item in the cart first)
-POST {{baseUrl}}/promotions/apply
-Content-Type: application/json
+###
+
+POST {{baseUrl}}/api/v1/products
 Authorization: Bearer {{token}}
+Content-Type: application/json
 
 {
-    "couponCode": "SAMPLE20"
+  "name": "Lavender Body Mist",
+  "brand": "Bath & Body Works",
+  "category": "fragrance",
+  "price": 14.50,
+  "description": "Refreshing body mist with calming lavender scent.",
+  "ingredients": ["Alcohol", "Water", "Lavender Extract"],
+  "images": ["https://example.com/bodymist.jpg"],
+  "stock": 120
 }
 
+###
 
-################################################################################
-### 5. ORDER MANAGEMENT
-################################################################################
-
-# @name createOrder
-### 5.1 USER: CREATE ORDER (Must have items in cart)
-POST {{baseUrl}}/orders
-Content-Type: application/json
+POST {{baseUrl}}/api/v1/products
 Authorization: Bearer {{token}}
+Content-Type: application/json
 
 {
-    "shippingAddress": {
-        "street": "123 Main St",
-        "city": "Beverly Hills",
-        "zipCode": "90210",
-        "country": "USA"
-    },
-    "paymentToken": "mock_payment_token_12345"
-}
-
-@orderResponse = {{createOrder.response.json}}
-@orderId = {{orderResponse.order._id}}
-
-### 5.2 USER: GET ALL MY ORDERS
-GET {{baseUrl}}/orders
-Authorization: Bearer {{token}}
-
-### 5.3 USER: GET SPECIFIC ORDER
-GET {{baseUrl}}/orders/{{orderId}}
-Authorization: Bearer {{token}}
-
-### 5.4 ADMIN: UPDATE ORDER STATUS (Requires adminToken)
-PUT {{baseUrl}}/orders/{{orderId}}/status
-Content-Type: application/json
-Authorization: Bearer {{adminToken}}
-
-{
-    "status": "shipped"
+  "name": "Argan Oil Shampoo",
+  "brand": "OGX",
+  "category": "haircare",
+  "price": 8.99,
+  "description": "Nourishing shampoo enriched with Moroccan argan oil.",
+  "ingredients": ["Argan Oil", "Keratin", "Silk Proteins"],
+  "images": ["https://example.com/shampoo.jpg"],
+  "stock": 150
 }

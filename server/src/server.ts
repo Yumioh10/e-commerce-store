@@ -1,40 +1,35 @@
-import mongoose, { Error } from 'mongoose';
-import app from './app'; // express setup
 import dotenv from 'dotenv';
-
-// Load environment variables
 dotenv.config();
 
+import express from 'express';
+const jwt = require("jsonwebtoken")
+import cors from 'cors';
+import helmet from 'helmet';
+import { connectDB } from './config/database';
+import { config } from './config/env';
+import routes from './routes';
+import { errorHandler } from './middlewares/error.middleware';
+
+const app = express();
 const PORT = process.env.PORT || 4000;
-const DB_URI = process.env.MONGO_URI;
+const JWT_SECRET = process.env.JWT_SECRET;
 
-/**
- * Connects to MongoDB and starts the Express server.
- */
-const startServer = async () => {
-    if (!DB_URI) {
-        console.error('Error: DB_URI is not defined in .env file');
-        // Exits process with failure code 1
-        process.exit(1); 
-    }
+// Middleware
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-    try {
-        // 1. AWAIT the Mongoose connection
-        const connection = await mongoose.connect(DB_URI);
-        
-        console.log(`✅ MongoDB Connected: ${connection.connection.host}`);
-        
-        // 2. Start listening only after a successful DB connection
-        app.listen(PORT, () => {
-            console.log(`🚀 Server running on http://localhost:${PORT}`);
-        });
-        
-    } catch (error) {
-        // Catch any connection errors
-        console.error('❌ MongoDB connection error:', Error.messages);
-        process.exit(1);
-    }
-};
+// Database connection
+connectDB();
 
-// Execute the main startup function
-startServer();
+// Routes
+app.use('/api/v1', routes);
+
+// Error handling
+app.use(errorHandler);
+
+// Start server
+app.listen(config.port, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});

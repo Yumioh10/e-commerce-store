@@ -1,0 +1,110 @@
+### 0. DEFINE ENVIRONMENT VARIABLES
+@baseUrl = http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTllNzRjM2Y4MmUzODkyMzRhNTI3NCIsImlhdCI6MTc2MzMwODQwNiwiZXhwIjoxNzYzOTEzMjA2fQ.IdwsIFygbpxQNN1a-Dj-ZP8UbbDE2VZS7nZ32rzt8tM
+@productId = 6919f882d449abc13eb79be9
+@orderId = ORD-A0040606
+
+
+
+################################################################################
+### 1. AUTHENTICATION & USER MANAGEMENT
+################################################################################
+
+### Register Admin User (Temporary - Remove in Production)
+POST {{baseUrl}}/api/v1/auth/register-admin
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "admin123",
+  "firstName": "Admin",
+  "lastName": "User"
+}
+
+### Login admin
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "admin123"
+}
+
+
+### Create Simple Product (Admin Only)
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"name":"Depiwhite S ecran eclaircissant spf 50","brand":"ACM","category":"skincare","price":160.99,"description":"Creme solaire de tres haute protection pour le visage, le decollete et les mains, elle est utilise aussi avant et apres les soins dermatologiques pour proteger la peau fragilisee.","ingredients":["Aqua", "Dicaprylyl Carbonate", "Ethylhexyl Methoxycinnamate", "Octocrylene", "Dipropylene Glycol", "Butyl Methoxydibenzoylmethane", "Isodecyl Neopentanoate", "Steareth-21", "C12-15 Alkyl Benzoate", "Glyceryl Stearate", "Bis-Ethylhexyloxyphenol Methoxyphenyl Triazine", "Titanium Dioxide [Nano]", "Ethylhexyl Triazone", "Pearl Powder", "Reseda Luteola Extract", "Arctostaphylos Uva Ursi Leaf Extract", "Carum Petroselinum (Parsley) Extract", "VP/Eicosene Copolymer", "Polyacrylamide", "C13-14 Isoparaffin", "Aluminum Hydroxide", "Stearic Acid", "Xanthan Gum", "Laureth-7", "Propylene Glycol", "Phenoxyethanol", "Chlorphenesin", "BHT", "Citric Acid", "Potassium Sorbate", "Disodium EDTA."],"images":["https://labo-acm.com/cdn/shop/files/HEROIMAGE-DEPIWHITESOINTPHOTO-PROTECTEUR.png"],"stock":10}
+
+### Update Product (Admin Only)
+PUT {{baseUrl}}/api/v1/products/{{productId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "price": 166.00,
+  "stock": 9
+}
+
+### Get Low Stock Products (Admin Only)
+GET {{baseUrl}}/api/v1/products/inventory/low-stock?threshold=10
+Authorization: Bearer {{token}}
+
+### Get Out of Stock Products (Admin Only)
+GET {{baseUrl}}/api/v1/products/inventory/out-of-stock
+Authorization: Bearer {{token}}
+
+### Delete Product (Admin Only)
+DELETE {{baseUrl}}/api/v1/products/{{productId}}
+Authorization: Bearer {{token}}
+
+### Get All Orders (User sees own, Admin sees all)
+GET {{baseUrl}}/api/v1/orders
+Authorization: Bearer {{token}}
+
+### Get Single Order
+GET {{baseUrl}}/api/v1/orders/{{orderId}}
+Authorization: Bearer {{token}}
+
+### Update Order Status (Admin Only)
+PUT {{baseUrl}}/api/v1/orders/{{orderId}}/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "processing"
+}
+
+###############################################
+# SAMPLE DATA FOR TESTING
+###############################################
+
+### Create Product - Vitamin C Serum (Admin)
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"name":"Vitamin C Serum","brand":"The Ordinary","category":"skincare","price":25.50,"description":"Brightening serum with pure vitamin C to reduce signs of aging.","ingredients":["Ascorbic Acid","Vitamin E","Ferulic Acid"],"images":["https://example.com/serum.jpg"],"stock":75}
+
+### Create Product - Matte Lipstick (Admin)
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"name":"Matte Lipstick","brand":"MAC","category":"makeup","price":19.00,"description":"Long-lasting matte lipstick in vibrant red.","ingredients":["Dimethicone","Pigments","Vitamin E"],"images":["https://example.com/lipstick.jpg"],"stock":200}
+
+### Create Product - Lavender Body Mist (Admin)
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"name":"Lavender Body Mist","brand":"Bath & Body Works","category":"fragrance","price":14.50,"description":"Refreshing body mist with calming lavender scent.","ingredients":["Alcohol","Water","Lavender Extract"],"images":["https://example.com/bodymist.jpg"],"stock":120}
+
+### Create Product - Argan Oil Shampoo (Admin)
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"name":"Argan Oil Shampoo","brand":"OGX","category":"haircare","price":8.99,"description":"Nourishing shampoo enriched with Moroccan argan oil.","ingredients":["Argan Oil","Keratin","Silk Proteins"],"images":["https://example.com/shampoo.jpg"],"stock":150}

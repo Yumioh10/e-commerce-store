@@ -1,98 +1,325 @@
-import { Order, IOrderDocument } from '../models/order.model.ts';
-import { Cart } from '../models/cart.model.ts';
-import { Product } from '../models/product.model.ts';
-import { ApiError } from '../utils/ApiError.ts';
-import { CreateOrderDto }from '../_shared/dtos/create-order.dto.ts'; // Contains shippingAddress
+import { Order } from '../models/order.model';
+import { Product } from '../models/product.model';
+import { User } from '../models/user.model';
+import { IOrderItem } from '../types/order.types';
+
+interface QueryOptions {
+  status?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  order?: string;
+}
 
 export class OrderService {
-  
-  // 1. CREATE Order (Complex Business Logic)
-  public async createOrder(userId: string, orderData: CreateOrderDto): Promise<IOrderDocument> {
-    const cart = await Cart.findOne({ user: userId }).populate('items.product');
-    
-    if (!cart || cart.items.length === 0) {
-      throw new ApiError(400, 'Cannot place order: Cart is empty.');
+  /**
+   * Create a new order
+   */
+  async createOrder(
+    userId: string,
+    items: IOrderItem[],
+    shippingAddress: any,
+    paymentMethod: string
+  ) {
+    // Validate user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
     }
 
+    // Validate and calculate order details
     let totalAmount = 0;
-    const orderItems: any[] = [];
-    
-    // Process items, calculate total, and check stock
-    for (const item of cart.items) {
-      // @ts-ignore: Mongoose population ensures item.product is a document
-      const product = item.product; 
+    const validatedItems = [];
+
+    for (const item of items) {
+      const product = await Product.findById(item.productId);
       
-      if (!product || product.stock < item.quantity) {
-        throw new ApiError(400, `Insufficient stock for product: ${product?.name || item.product}.`);
+      if (!product) {
+        throw new Error(`Product with ID ${item.productId} not found`);
       }
 
-      totalAmount += product.price * item.quantity;
-      
-      orderItems.push({
-        product: product._id,
-        name: product.name,
-        price: product.price, // Snapshot price
+      if (product.stock < item.quantity) {
+        throw new Error(`Product "${product.name}" is out of stock. Available: ${product.stock}`);
+      }
+
+      // Calculate item total
+      const itemTotal = product.price * item.quantity;
+      totalAmount += itemTotal;
+
+      validatedItems.push({
+        productId: item.productId,
         quantity: item.quantity,
+        price: product.price
       });
 
-      // Optional: Decrement stock here (for a complete implementation)
-      // product.stock -= item.quantity;
-      // await product.save();
+      // Decrease product stock
+      product.stock -= item.quantity;
+      await product.save();
     }
-    
-    // 2. Create the order
+
+    // Create the order
     const order = new Order({
-      user: userId,
-      items: orderItems,
+      userId,
+      items: validatedItems,
       totalAmount,
-      shippingAddress: orderData.shippingAddress,
-      // Status is 'paid' or 'pending' depending on payment gateway integration
-      status: 'pending', 
-      // paymentToken: orderData.paymentToken,
+      shippingAddress,
+      paymentMethod,
+      status: 'pending'
     });
 
     await order.save();
-    
-    // 3. Clear the cart only after successful order creation
-    await Cart.updateOne({ user: userId }, { $set: { items: [] } });
-    
+
+    // Populate product details in the response
+    await order.populate('items.productId', 'name brand images');
+    await order.populate('userId', 'firstName lastName email');
+
     return order;
   }
 
-  // 2. READ Single Order (The missing method)
-  public async getOrderById(orderId: string): Promise<IOrderDocument> {
-    // Populate the user reference for security checks in the controller
-    const order = await Order.findById(orderId).populate('user'); 
-    
+  /**
+   * Get all orders with pagination and filtering
+   */
+  async getAllOrders(options: QueryOptions = {}) {
+    const {
+      status,
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      order = 'desc'
+    } = options;
+
+    const query: any = {};
+    if (status) {
+      query.status = status;
+    }
+
+    const skip = (page - 1) * limit;
+    const sortOrder = order === 'desc' ? -1 : 1;
+
+    const orders = await Order.find(query)
+      .populate('userId', 'firstName lastName email')
+      .populate('items.productId', 'name brand images price')
+      .sort({ [sortBy]: sortOrder })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Order.countDocuments(query);
+
+    return { orders, total };
+  }
+
+  /**
+   * Get orders for a specific user
+   */
+  async getUserOrders(userId: string, options: QueryOptions = {}) {
+    const {
+      status,
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      order = 'desc'
+    } = options;
+
+    const query: any = { userId };
+    if (status) {
+      query.status = status;
+    }
+
+    const skip = (page - 1) * limit;
+    const sortOrder = order === 'desc' ? -1 : 1;
+
+    const orders = await Order.find(query)
+      .populate('items.productId', 'name brand images price')
+      .sort({ [sortBy]: sortOrder })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Order.countDocuments(query);
+
+    return { orders, total };
+  }
+
+  /**
+   * Get single order by ID
+   */
+  async getOrderById(orderId: string) {
+    const order = await Order.findById(orderId)
+      .populate('userId', 'firstName lastName email')
+      .populate('items.productId', 'name brand images price category');
+
+    return order;
+  }
+
+  /**
+   * Update order status
+   */
+  async updateOrderStatus(orderId: string, status: string) {
+    const order = await Order.findById(orderId);
+
     if (!order) {
-      throw new ApiError(404, 'Order not found.');
+      throw new Error('Order not found');
     }
-    
+
+    // Prevent updating cancelled or delivered orders
+    if (order.status === 'cancelled') {
+      throw new Error('Cancelled orders cannot be updated');
+    }
+
+    if (order.status === 'delivered' && status !== 'delivered') {
+      throw new Error('Delivered orders cannot be changed to another status');
+    }
+
+    order.status = status as any;
+    await order.save();
+
+    await order.populate('userId', 'firstName lastName email');
+    await order.populate('items.productId', 'name brand images price');
+
     return order;
   }
-  
-  // 3. READ User Orders
-  public async getOrdersForUser(userId: string): Promise<IOrderDocument[]> {
-    return Order.find({ user: userId }).sort({ createdAt: -1 });
+
+  /**
+   * Cancel an order
+   */
+  async cancelOrder(orderId: string) {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      throw new Error('Order not found');
+    }
+
+    // Only pending and processing orders can be cancelled
+    if (!['pending', 'processing'].includes(order.status)) {
+      throw new Error(`Orders with status "${order.status}" cannot be cancelled`);
+    }
+
+    // Restore product stock
+    for (const item of order.items) {
+      const product = await Product.findById(item.productId);
+      if (product) {
+        product.stock += item.quantity;
+        await product.save();
+      }
+    }
+
+    order.status = 'cancelled';
+    await order.save();
+
+    await order.populate('userId', 'firstName lastName email');
+    await order.populate('items.productId', 'name brand images price');
+
+    return order;
   }
 
-  // 4. UPDATE Order Status (Admin action)
-  public async updateOrderStatus(orderId: string, status: string): Promise<IOrderDocument> {
-    const validStatuses = ['pending', 'paid', 'shipped', 'delivered', 'cancelled'];
-    if (!validStatuses.includes(status)) {
-        throw new ApiError(400, `Invalid status: ${status}.`);
+  /**
+   * Delete an order
+   */
+  async deleteOrder(orderId: string) {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return null;
     }
 
-    const updatedOrder = await Order.findByIdAndUpdate(
-      orderId, 
-      { status }, 
-      { new: true, runValidators: true }
-    );
-    
-    if (!updatedOrder) {
-      throw new ApiError(404, 'Order not found for status update.');
+    // If order is not cancelled, restore stock before deleting
+    if (order.status !== 'cancelled') {
+      for (const item of order.items) {
+        const product = await Product.findById(item.productId);
+        if (product) {
+          product.stock += item.quantity;
+          await product.save();
+        }
+      }
     }
-    
-    return updatedOrder;
+
+    await Order.findByIdAndDelete(orderId);
+    return order;
+  }
+
+  /**
+   * Generate invoice for an order
+   */
+  async generateInvoice(orderId: string) {
+    const order = await Order.findById(orderId)
+      .populate('userId', 'firstName lastName email')
+      .populate('items.productId', 'name brand price');
+
+    if (!order) {
+      throw new Error('Order not found');
+    }
+
+    // Calculate subtotal, tax, and shipping
+    const subtotal = order.totalAmount;
+    const tax = subtotal * 0.1; // 10% tax
+    const shipping = subtotal > 50 ? 0 : 5.99; // Free shipping over $50
+    const total = subtotal + tax + shipping;
+
+    const invoice = {
+      orderId: order._id,
+      orderNumber: `ORD-${(order._id as any).toString().slice(-8).toUpperCase()}`,
+      orderDate: order.createdAt,
+      status: order.status,
+      customer: {
+        name: `${(order.userId as any).firstName} ${(order.userId as any).lastName}`,
+        email: (order.userId as any).email
+      },
+      shippingAddress: order.shippingAddress,
+      items: order.items.map((item: any) => ({
+        name: item.productId.name,
+        brand: item.productId.brand,
+        quantity: item.quantity,
+        price: item.price,
+        total: item.price * item.quantity
+      })),
+      pricing: {
+        subtotal: subtotal.toFixed(2),
+        tax: tax.toFixed(2),
+        shipping: shipping.toFixed(2),
+        total: total.toFixed(2)
+      },
+      paymentMethod: order.paymentMethod
+    };
+
+    return invoice;
+  }
+
+  /**
+   * Get order statistics (for admin dashboard)
+   */
+  async getOrderStatistics() {
+    const totalOrders = await Order.countDocuments();
+    const pendingOrders = await Order.countDocuments({ status: 'pending' });
+    const processingOrders = await Order.countDocuments({ status: 'processing' });
+    const shippedOrders = await Order.countDocuments({ status: 'shipped' });
+    const deliveredOrders = await Order.countDocuments({ status: 'delivered' });
+    const cancelledOrders = await Order.countDocuments({ status: 'cancelled' });
+
+    // Calculate total revenue (from delivered orders)
+    const revenueResult = await Order.aggregate([
+      { $match: { status: 'delivered' } },
+      { $group: { _id: null, totalRevenue: { $sum: '$totalAmount' } } }
+    ]);
+
+    const totalRevenue = revenueResult.length > 0 ? revenueResult[0].totalRevenue : 0;
+
+    // Get recent orders
+    const recentOrders = await Order.find()
+      .populate('userId', 'firstName lastName')
+      .populate('items.productId', 'name')
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    return {
+      totalOrders,
+      ordersByStatus: {
+        pending: pendingOrders,
+        processing: processingOrders,
+        shipped: shippedOrders,
+        delivered: deliveredOrders,
+        cancelled: cancelledOrders
+      },
+      totalRevenue: totalRevenue.toFixed(2),
+      recentOrders
+    };
   }
 }

@@ -1,13 +1,13 @@
 E-commerce store:
 
 1. Project Overview
-is modern e-commerce platform focused on selling cosmetics products. The core functionality include user accounts, product catalogs, shopping carts, secure checkout, and order processing, all designed to provide a smooth online shopping experience.
+   is modern e-commerce platform focused on selling cosmetics products. The core functionality include user accounts, product catalogs, shopping carts, secure checkout, and order processing, all designed to provide a smooth online shopping experience.
 
 2. Project Workflow:
-   * Phase 1: Project Initialization
-[ ] Initialize the Node.js project: npm init -y.
+   - Phase 1: Project Initialization
+     [ ] Initialize the Node.js project: npm init -y.
 
-[ ] Create the basic folder structure: frontend, public, public/image, src, src/assets, src/    components, src/pages, sr## Features
+[ ] Create the basic folder structure: client, public, public/image, src, src/assets, src/ components, src/pages, sr## Features
 
 - ⚡️ [Vite](https://vite.dev) - Fast build tool and dev server
 - ⚛️ [React](https://react.dev) - UI library
@@ -82,5 +82,3 @@ Example: Create `src/routes/contact.tsx` for a `/contact` route.
 - [TanStack Router Documentation](https://tanstack.com/router/latest)
 - [React Documentation](https://react.dev)
 - [Vite Documentation](https://vite.dev)
-
-

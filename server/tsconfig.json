@@ -2,21 +2,18 @@
   "compilerOptions": {
     "target": "es2020",
     "module": "commonjs",
-    "outDir": "./public",
+    "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
     "sourceMap": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "experimentalDecorators": true, // For class-validator
-    "emitDecoratorMetadata": true, // For class-validator
-    "strictPropertyInitialization": false, // For class-validation
-    "useUnknownInCatchVariables": false,
     "baseUrl": "./", // Defines the root for path lookups
     "paths": {
       "#@/*": ["src/*"]
     }
   },
-  "include": ["/src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
