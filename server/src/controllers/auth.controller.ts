@@ -229,12 +229,12 @@ export class AuthController {
   }
 
   /**
-   * Logout user (client-side token removal)
+   * Logout user (frontend-side token removal)
    * POST /api/v1/auth/logout
    */
   async logout(req: Request, res: Response, next: NextFunction) {
     try {
-      // In a stateless JWT system, logout is handled client-side
+      // In a stateless JWT system, logout is handled frontend-side
       // You can optionally implement token blacklisting here
       
       res.status(200).json({

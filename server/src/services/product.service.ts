@@ -129,7 +129,7 @@ export class ProductService {
     const totalProducts = await Product.countDocuments(query)
     const totalPages = Math.ceil(totalProducts / Number(limit))
 
-    // Get available filters (for client filter UI)
+    // Get available filters (for frontend filter UI)
     const availableFilters = await this.getAvailableFilters()
 
     return {

@@ -7,7 +7,7 @@ E-commerce store:
    - Phase 1: Project Initialization
      [ ] Initialize the Node.js project: npm init -y.
 
-[ ] Create the basic folder structure: client, public, public/image, src, src/assets, src/ components, src/pages, sr## Features
+[ ] Create the basic folder structure: frontend, public, public/image, src, src/assets, src/ components, src/pages, sr## Features
 
 - ⚡️ [Vite](https://vite.dev) - Fast build tool and dev server
 - ⚛️ [React](https://react.dev) - UI library
