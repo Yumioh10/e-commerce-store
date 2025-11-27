@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ApiError } from '../utils/ApiError';
-import { IUser } from '../_shared/interfaces/user.interface';
+import { IUser } from '../types/user.types';
 
 // ⚠️ Note on Typing: In a full TypeScript project, you would extend Express's 
 // Request interface to include the `user` property. For this example, we assume 
