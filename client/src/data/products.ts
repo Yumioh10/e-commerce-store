@@ -1,8 +1,8 @@
-import type { Product } from '../types'
+import type { Product, ProductId } from '../types'
 
 export const PRODUCTS: Product[] = [
   {
-    id: 'p1',
+    id: 'p1' as ProductId,
     name: 'Hydrating Facial Serum',
     price: 49.99,
     category: 'Serums',
@@ -27,7 +27,7 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: 'p2',
+    id: 'p2' as ProductId,
     name: 'Vitamin C Brightening Cream',
     description: 'Powerful antioxidant cream to brighten and even skin tone',
     price: 59.99,
@@ -51,7 +51,7 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: '3',
+    id: '3' as ProductId,
     name: 'Retinol Night Treatment',
     description: 'Clinical-strength retinol for anti-aging and skin renewal',
     price: 79.99,
@@ -70,7 +70,7 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: '4',
+    id: '4' as ProductId,
     name: 'Gentle Cleansing Foam',
     description:
       'pH-balanced cleanser that removes impurities without stripping',
@@ -95,7 +95,7 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: '5',
+    id: '5' as ProductId,
     name: 'SPF 50 Mineral Sunscreen',
     description:
       'Broad-spectrum protection with zinc oxide and titanium dioxide',
@@ -120,7 +120,7 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: '6',
+    id: '6' as ProductId,
     name: 'Niacinamide Pore Refining Serum',
     description: 'Minimizes pores and regulates oil production',
     price: 54.99,
@@ -144,7 +144,7 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: '7',
+    id: '7' as ProductId,
     name: 'Collagen Boosting Eye Cream',
     description: 'Reduces fine lines and dark circles around delicate eye area',
     price: 69.99,
@@ -163,7 +163,7 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: '8',
+    id: '8' as ProductId,
     name: 'Exfoliating AHA/BHA Toner',
     description: 'Dual-action toner for smoother, clearer skin texture',
     price: 39.99,
@@ -187,7 +187,7 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: '9',
+    id: '9' as ProductId,
     name: 'Peptide Firming Moisturizer',
     description: 'Advanced peptide complex for lifted, firmer-looking skin',
     price: 84.99,
@@ -211,7 +211,7 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: '10',
+    id: '10' as ProductId,
     name: 'Calming Centella Mask',
     description: 'Soothing sheet mask for sensitive and irritated skin',
     price: 29.99,
@@ -235,7 +235,7 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: '11',
+    id: '11' as ProductId,
     name: 'Micellar Cleansing Water',
     description: 'Gentle makeup remover and cleanser in one step',
     price: 24.99,
@@ -259,7 +259,7 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: '12',
+    id: '12' as ProductId,
     name: 'Bakuchiol Alternative Serum',
     description: 'Natural retinol alternative for sensitive skin types',
     price: 64.99,

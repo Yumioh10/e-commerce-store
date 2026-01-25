@@ -1,5 +1,13 @@
+import { z } from 'zod'
+
+export const ProductId = z.string().brand<'ProductId'>();
+export type ProductId = z.infer<typeof ProductId>;
+
+export const OrderId = z.string().brand<'OrderId'>();
+export type OrderId = z.infer<typeof OrderId>;
+
 export interface Product {
-  id: string;
+  id: ProductId;
   name: string;
   description: string;
   price: number;
@@ -26,6 +34,32 @@ export interface CartContextType {
   getTotalPrice: () => number;
 }
 
+export interface Order {
+  id: OrderId;
+  items: CartItem[];
+  total: number;
+  status: 'pending' | 'confirmed' | 'shipped' | 'delivered';
+  createdAt: string;
+}
+
+export interface CheckoutForm {
+  shipping: {
+    firstName: string;
+    lastName: string;
+    phone: number;
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
+  payment: {
+    method: 'card' | 'paypal';
+    cardNumber?: string;
+    expiry?: string;
+    cvv?: string;
+  };
+}
+
 export type Page = 'home' | 'products' | 'product-detail' | 'cart' | 'checkout' | 'success';
 
 export interface props {
@@ -36,3 +70,4 @@ export interface props {
   onViewDetails: (product: Product) => void;
   products: Product[];
 };
+
