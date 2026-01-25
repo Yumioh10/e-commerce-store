@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@tailwindcss forms;
+
+button {
+  @apply focus:outline-none;
+  font-family: 'Inter', sans-serif; 
+  color: #44D7A8;
+}

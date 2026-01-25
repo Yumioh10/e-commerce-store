@@ -36,6 +36,3 @@ export interface props {
   onViewDetails: (product: Product) => void;
   products: Product[];
 };
-
-
-

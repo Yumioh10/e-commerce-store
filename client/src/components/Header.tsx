@@ -12,6 +12,7 @@ export function Header({ onNavigate, currentPage }: props) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
+            <img src="./mapara.svg" alt="Maparasanté logo" className='h-12 w-auto' />
             <button
               onClick={() => onNavigate('home')}
               className="text-2xl font-bold text-teal-600 hover:text-teal-700"

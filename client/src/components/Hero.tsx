@@ -1,7 +1,6 @@
 import { ArrowRight } from 'lucide-react'
-import type { props } from '../types'
 
-export function Hero({ onNavigate }: props) {
+export function Hero() {
   return (
     <section className="relative bg-gradient-to-br from-teal-50 via-white to-emerald-50 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -22,17 +21,23 @@ export function Hero({ onNavigate }: props) {
               everyday beauty.
             </p>
 
-            <div className="flex flex-wrap gap-4">
-              <button
-                onClick={() => onNavigate('products')}
-                className="inline-flex items-center gap-2 bg-teal-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-teal-700 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
+            <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
+              <div className='rounded-md shadow'>
+                <a
+                href='products'
+                className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-white bg-teal-600 hover:bg-teal-700 md:py-4 md:text-lg md:px-10 transition shadow"
               >
                 Shop Now
                 <ArrowRight className="ml-2 w-5 h-5" />
-              </button>
-              <button className="inline-flex items-center gap-2 bg-white text-gray-900 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transition-all border-2 border-gray-200">
-                Learn More
-              </button>
+              </a>
+              </div>
+              <div className="mt-3 sm:mt-0 sm:ml-3">
+                <a 
+                  href='#categories'
+                  className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full bg-white text-gray-900 hover:bg-gray-50 md:py-4 md:text-lg md:px-10 transition shadow">
+                    Browse Categories 
+                </a>
+              </div>
             </div>
 
             <div className="flex gap-8 pt-4">
