@@ -12,12 +12,6 @@ export default {
           coral: "#FF7782",
           'coral-light': "#FFD3AC",
         },
-        medical: {
-          white: "#FAFBFC",
-          gray: "#F0F4F8",
-          text: "#1A202C",
-          'text-secondary': "#4A5568",
-        },
     },
     fontFamily: {
       sans: ['Inter', 'system-ui', 'sans-serif'],
