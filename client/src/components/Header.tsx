@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ShoppingCart, Search, Menu, X, Heart } from 'lucide-react'
-import { useCart } from '../hooks/useCart'
-import type { props } from '../types'
+import { useCart } from '@/hooks/useCart'
+import type { props } from '@/types'
 
 export function Header({ onNavigate, currentPage }: props) {
   const { getTotalItems } = useCart()

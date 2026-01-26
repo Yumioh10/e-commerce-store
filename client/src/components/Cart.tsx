@@ -1,5 +1,5 @@
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react'
-import { useCart } from '../hooks/useCart'
+import { useCart } from '@/hooks/useCart'
 
 interface CartProps {
   isOpen: boolean

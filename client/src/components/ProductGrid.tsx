@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react'
 import { ProductCard } from './ProductCard'
-import type { props } from '../types'
-import { PRODUCTS, CATEGORIES } from '../data/products'
+import type { props } from '@/types'
+import { mockProducts } from '@/data/mockProducts'
 import { Filter } from 'lucide-react'
+import { categories } from '@/data/mockCategories'
 
 export function ProductGrid({ onViewDetails }: props) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -13,8 +14,8 @@ export function ProductGrid({ onViewDetails }: props) {
   const filteredProducts = useMemo(() => {
     const productsByCategory =
       selectedCategory === 'all'
-        ? PRODUCTS
-        : PRODUCTS.filter((product) => product.category === selectedCategory)
+        ? mockProducts
+        : mockProducts.filter((product) => product.category === selectedCategory)
 
     switch (sortBy) {
       case 'price-low':
@@ -85,7 +86,7 @@ export function ProductGrid({ onViewDetails }: props) {
               Filters
             </h3>
             <div className="space-y-2">
-              {CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}

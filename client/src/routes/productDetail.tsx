@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { PRODUCTS } from '../data/products'
-import { ProductCard } from '../components/ProductCard'
-import type { Product, Page } from '../types'
+import { mockProducts } from '@/data/mockProducts'
+import { ProductCard } from '@/components/ProductCard'
+import type { Product, Page } from '@/types'
 
 export const Route = createFileRoute('/productDetail')({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -13,38 +13,38 @@ export const Route = createFileRoute('/productDetail')({
 function RouteComponent() {
   const navigate = Route.useNavigate()
   const { id } = Route.useSearch()
-  const product = PRODUCTS.find(p => p.id === id)
+  const product = mockProducts.find((p) => p.id === id)
 
   const handleNavigate = (page: Page) => {
     switch (page) {
       case 'home':
-        navigate({ to: '/' });
-        break;
+        navigate({ to: '/' })
+        break
       case 'products':
-        navigate({ to: '/products' });
-        break;
+        navigate({ to: '/products' })
+        break
       case 'product-detail':
-        navigate({ to: '/products' }); // Navigate to products instead
-        break;
+        navigate({ to: '/products' }) // Navigate to products instead
+        break
       case 'cart':
-        navigate({ to: '/cart' });
-        break;
+        navigate({ to: '/cart' })
+        break
       case 'checkout':
-        navigate({ to: '/Checkout' });
-        break;
+        navigate({ to: '/Checkout' })
+        break
       case 'success':
-        navigate({ to: '/success' });
-        break;
+        navigate({ to: '/success' })
+        break
     }
-  };
+  }
 
   const handleViewDetails = (product: Product) => {
     navigate({ to: '/productDetail', search: { id: product.id } })
   }
 
   const handleCartOpen = () => {
-    navigate({ to: '/cart' });
-  };
+    navigate({ to: '/cart' })
+  }
 
   if (!product) {
     return <div>Product not found</div>

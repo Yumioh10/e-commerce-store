@@ -1,6 +1,6 @@
 import { ShoppingCart, Star } from 'lucide-react'
-import type { props } from '../types'
-import { useCart } from '../hooks/useCart'
+import type { props } from '@/types'
+import { useCart } from '@/hooks/useCart'
 
 export function ProductCard({ product, onViewDetails }: props) {
   const { addToCart } = useCart()

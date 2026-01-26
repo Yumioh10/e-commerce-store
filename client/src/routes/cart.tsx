@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Cart } from '../components/Cart'
+import { Cart } from '@/components/Cart'
 import { useNavigate } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/cart')({

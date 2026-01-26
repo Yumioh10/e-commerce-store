@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Product, CartItem } from '../types';
+import type { Product, CartItem } from '@/types';
 import { CartContext } from './cart';
 
 export function CartProvider({ children }: { children: React.ReactNode }) {

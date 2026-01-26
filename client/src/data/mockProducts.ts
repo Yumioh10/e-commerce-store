@@ -1,6 +1,6 @@
-import type { Product, ProductId } from '../types'
+import type { Product, ProductId } from '@/types'
 
-export const PRODUCTS: Product[] = [
+export const mockProducts: Product[] = [
   {
     id: 'p1' as ProductId,
     name: 'Hydrating Facial Serum',
@@ -279,12 +279,4 @@ export const PRODUCTS: Product[] = [
   },
 ]
 
-export const CATEGORIES = [
-  { id: 'all', name: 'All Products' },
-  { id: 'serums', name: 'Serums' },
-  { id: 'moisturizers', name: 'Moisturizers' },
-  { id: 'cleansers', name: 'Cleansers' },
-  { id: 'toners', name: 'Toners' },
-  { id: 'eye-care', name: 'Eye Care' },
-  { id: 'sunscreen', name: 'Sunscreen' },
-]
+

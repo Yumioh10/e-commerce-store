@@ -1,8 +1,8 @@
 import { createRootRoute, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { CartProvider } from "../context/CartContext";
-import { Header } from "../components/Header";
-import type { Page } from "../types";
+import { CartProvider } from "@/context/CartContext";
+import { Header } from "@/components/Header";
+import type { Page } from "@/types";
 
 // Root route definition
 export const Route = createRootRoute({
