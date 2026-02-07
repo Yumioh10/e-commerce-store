@@ -1,77 +1,70 @@
-import { ShoppingCart, Star } from 'lucide-react'
-import type { props } from '@/types'
-import { useCart } from '@/hooks/useCart'
+import { Link } from '@tanstack/react-router';
+import { ShoppingCart } from 'lucide-react';
+import { useCartStore } from '@/store/cartStore';
+import { motion } from 'motion/react';
+import type { Product } from '@/types';
 
-export function ProductCard({ product, onViewDetails }: props) {
-  const { addToCart } = useCart()
+interface ProductCardProps {
+  product: Product;
+}
+
+export const ProductCard = ({ product }: ProductCardProps) => {
+  const { addItem } = useCartStore();
 
   return (
-    <div className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
-      <div className="relative overflow-hidden aspect-square bg-gray-50">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-        />
-        {!product.inStock && (
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <span className="bg-white text-gray-900 px-4 py-2 rounded-full font-semibold text-sm">
-              Out of Stock
-            </span>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="group bg-medical-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"
+    >
+      <Link to="/products/$productId" params={{ productId: product.id }}>
+        <div className="relative overflow-hidden">
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        </div>
+      </Link>
+
+      <div className="p-4">
+        <Link to="/products/$productId" params={{ productId: product.id }}>
+          <h3 className="font-semibold text-medical-text mb-1 line-clamp-1">{product.name}</h3>
+          <p className="text-sm text-medical-text-secondary mb-3 capitalize">{product.volume}</p>
+        </Link>
+
+        {/* Rating */}
+        <div className="flex items-center mb-3">
+          <div className="flex items-center">
+            {[...Array(5)].map((_, i) => (
+              <span
+                key={i}
+                className={`text-sm ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-medical-gray'}`}
+              >
+                ★
+              </span>
+            ))}
           </div>
-        )}
-        <div className="absolute top-4 right-4">
-          <span className="bg-teal-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-            {product.category}
-          </span>
-        </div>
-      </div>
-
-      <div className="p-6 space-y-4">
-        <div>
-          <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-teal-600 transition-colors">
-            {product.name}
-          </h3>
-          <p className="text-sm text-gray-600 line-clamp-2">
-            {product.description}
-          </p>
-        </div>
-        <div className="text-2xl font-bold text-gray-900">
-          ${product.price.toFixed(2)}
-        </div>
-        <div className="flex items-center gap-1">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star
-              key={i}
-              className={`w-4 h-4 ${
-                i < Math.floor(product.rating)
-                  ? 'fill-yellow-400 text-yellow-500'
-                  : 'text-gray-300'
-              }`}
-            />
-          ))}
-          <span className="text-sm text-gray-600 ml-2">
-            ({product.reviews})
-          </span>
+          <span className="text-xs text-medical-text-secondary ml-2">({product.reviewCount})</span>
         </div>
 
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-          <button
-            onClick={() => onViewDetails(product)}
-            className="flex items-center gap-2 bg-gray-200 text-teal-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-300 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed transform hover:scale-105"
-          >
-            Details
-          </button>
-          <button
-            onClick={() => addToCart(product)}
+        {/* Price */}
+        <div className="flex items-center justify-between">
+          <span className="text-xl font-bold text-medical-text">{product.price.toFixed(2)} Dh</span>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => addItem(product)}
+            className="bg-brand-primary hover:bg-brand-secondary text-white p-2 rounded-full transition-colors"
             disabled={!product.inStock}
-            className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-700 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed transform hover:scale-105"
           >
-            <ShoppingCart className="w-4 h-4" />
-            Add to Cart
-          </button>
+            <ShoppingCart className="w-5 h-5" />
+          </motion.button>
         </div>
       </div>
-    </div>
-  )
-}
+    </motion.div>
+  );
+};
