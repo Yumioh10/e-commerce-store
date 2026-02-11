@@ -1,5 +1,5 @@
 ### 0. DEFINE ENVIRONMENT VARIABLES
-@baseUrl = http://localhost:4000
+@baseUrl = http://localhost:5000
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTllNzRjM2Y4MmUzODkyMzRhNTI3NCIsImlhdCI6MTc2MzMwODQwNiwiZXhwIjoxNzYzOTEzMjA2fQ.IdwsIFygbpxQNN1a-Dj-ZP8UbbDE2VZS7nZ32rzt8tM
 @productId = 6919f882d449abc13eb79be9
 @orderId = ORD-A0040606
@@ -15,10 +15,11 @@ POST {{baseUrl}}/api/v1/auth/register-admin
 Content-Type: application/json
 
 {
+  "firstName": "Admin",
+  "lastName": "User",
   "email": "admin@example.com",
   "password": "admin123",
-  "firstName": "Admin",
-  "lastName": "User"
+  "role": "admin"
 }
 
 ### Login admin

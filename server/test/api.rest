@@ -1,0 +1,189 @@
+### ============================================
+### MaparaSanté Medical Cosmetics API
+### Base URL: http://localhost:4000/api
+### ============================================
+
+@baseUrl = http://localhost:4000/api
+@contentType = application/json
+
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGNhOGQzYWExZGIxMDU3YWVkOWE1OCIsImlhdCI6MTc3MDgyNTk0MCwiZXhwIjoxNzcxNDMwNzQwfQ.BNrT0RdvPULBaD6-qMFQ5AgAf0yjG0JdhOz3swrW9UY
+
+### ============================================
+### HEALTH CHECK
+### ============================================
+
+GET {{baseUrl}}/health
+Content-Type: {{contentType}}
+
+### ============================================
+### AUTHENTICATION
+### ============================================
+
+### Register New Patient (No Medical License)
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Marie",
+  "lastName": "Dubois",
+  "email": "marie.dubois@email.com",
+  "password": "SecurePass123!",
+  "acceptTerms": true
+}
+
+### Register with Invalid Email (Should Fail)
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "invalid-email",
+  "password": "short",
+  "acceptTerms": true
+}
+
+### Register Duplicate Email (Should Fail)
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Duplicate",
+  "lastName": "User",
+  "email": "marie.dubois@email.com",
+  "password": "SecurePass123!",
+  "acceptTerms": true
+}
+
+### Login 
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "marie.dubois@email.com",
+  "password": "SecurePass123!"
+}
+
+### Login 
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "dr.martin@clinic.fr",
+  "password": "MedSecure456!"
+}
+
+### Login with Invalid Credentials (Should Fail)
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "marie.dubois@email.com",
+  "password": "WrongPassword123!"
+}
+
+### Login with Non-existent User (Should Fail)
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "nonexistent@email.com",
+  "password": "SomePassword123!"
+}
+
+### ============================================
+### PROTECTED ROUTES (Requires JWT Token)
+### ============================================
+
+### Get Current User (Replace {{token}} with actual JWT)
+GET {{baseUrl}}/auth/me
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### EXAMPLE WITH CAPTURED TOKEN
+### ============================================
+
+### Step 1: Login and capture token
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "dr.martin@clinic.fr",
+  "password": "MedSecure456!"
+}
+
+### Step 2: Use captured token for protected route
+GET {{baseUrl}}/auth/me
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### EDGE CASES & ERROR HANDLING
+### ============================================
+
+### Register with Missing Required Fields
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "",
+  "lastName": "",
+  "email": "",
+  "password": ""
+}
+
+### Register with Weak Password
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "test@test.com",
+  "password": "123",
+  "acceptTerms": true
+}
+
+### Register without Accepting Terms
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "test@test.com",
+  "password": "SecurePass123!",
+  "acceptTerms": false
+}
+
+### Access Protected Route Without Token (Should Fail)
+GET {{baseUrl}}/auth/me
+Content-Type: {{contentType}}
+
+### Access Protected Route With Invalid Token (Should Fail)
+GET {{baseUrl}}/auth/me
+Content-Type: {{contentType}}
+Authorization: Bearer invalid_token_here
+
+### ============================================
+### LOAD TESTING (Run Multiple Times)
+### =========================================###
+
+### Rapid Login Attempts (Rate Limiting Test)
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "marie.dubois@email.com",
+  "password": "SecurePass123!"
+}
+
+### ============================================
+### ENVIRONMENT VARIABLES
+### ============================================
+# Create a .env file in same directory:
+# token=your_jwt_token_here
+# Or use VS Code REST Client variables:
+# @token = eyJhbGciOiJIUzI1NiIs...

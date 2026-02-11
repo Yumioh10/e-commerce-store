@@ -1,4 +1,30 @@
 import { Router } from 'express';
+import { body } from 'express-validator';
+import { register, login, getMe } from '../controllers/auth.controller';
+import { protect } from '../middlewares/auth.middleware';
+
+const router = Router();
+
+// Register with validation
+router.post('/register', [
+  body('firstName').trim().isLength({ min: 2 }).withMessage('First name required'),
+  body('lastName').trim().isLength({ min: 2 }).withMessage('Last name required'),
+  body('email').isEmail().normalizeEmail().withMessage('Valid email required'),
+  body('password').isLength({ min: 8 }).withMessage('Password must be 8+ characters')
+], register);
+
+// Login with validation
+router.post('/login', [
+  body('email').isEmail().normalizeEmail().withMessage('Valid email required'),
+  body('password').exists().withMessage('Password required')
+], login);
+
+// Protected route
+router.get('/me', protect, getMe);
+
+export default router;
+
+/*import { Router } from 'express';
 import AuthController from '../controllers/auth.controller';
 import { AuthService } from '../services/auth.service';
 import { User } from '../models/user.model';
@@ -31,4 +57,4 @@ router.post('/register-admin', async (req, res, next) => {
   }
 });
 
-export default router;
+export default router;*/

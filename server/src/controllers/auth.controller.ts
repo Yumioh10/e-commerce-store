@@ -1,4 +1,132 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import { validationResult } from 'express-validator';
+import User from '../models/user.model';
+
+const generateToken = (id: string): string => {
+  const secret = process.env.JWT_SECRET;
+  const expire = process.env.JWT_EXPIRE || '7d';
+
+  if (!secret) {
+    throw new Error('JWT_SECRET is not defined. Check .env file.');
+  }
+  return jwt.sign(
+    { id }, 
+    secret as jwt.Secret, {
+    expiresIn: expire as jwt.SignOptions['expiresIn'] }
+  );
+};
+
+// Register new user
+export const register = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ success: false, errors: errors.array() });
+      return;
+    }
+
+    const { firstName, lastName, email, password } = req.body;
+
+    // Check if user exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      res.status(400).json({ success: false, message: 'User already exists with this email' });
+      return;
+    }
+
+    // Create user
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      password,
+      role: existingUser ? 'customer': 'admin',
+    });
+
+    const token = generateToken(user._id.toString());
+
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ success: false, message: 'Server error during registration' });
+  }
+};
+
+// Login user
+export const login = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ success: false, errors: errors.array() });
+      return;
+    }
+
+    const { email, password } = req.body;
+
+    // Find user with password
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
+      return;
+    }
+
+    // Check password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
+      return;
+    }
+
+    const token = generateToken(user._id.toString());
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ success: false, message: 'Server error during login' });
+  }
+};
+
+// Get current user
+export const getMe = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const user = await User.findById(req.user.id);
+    res.json({
+      success: true,
+      user: {
+        id: user?._id,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        email: user?.email,
+        role: user?.role
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+/*import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
 
@@ -9,7 +137,7 @@ export class AuthController {
    * Register a new user
    * POST /api/v1/auth/register
    */
-  async register(req: Request, res: Response, next: NextFunction) {
+  /*async register(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password, firstName, lastName } = req.body;
 
@@ -74,7 +202,7 @@ export class AuthController {
    * Login user
    * POST /api/v1/auth/login
    */
-  async login(req: Request, res: Response, next: NextFunction) {
+  /*async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body;
 
@@ -117,7 +245,7 @@ export class AuthController {
    * Get current logged in user profile
    * GET /api/v1/auth/me
    */
-  async getMe(req: AuthRequest, res: Response, next: NextFunction) {
+  /*async getMe(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const user = req.user;
 
@@ -142,7 +270,7 @@ export class AuthController {
    * Update user profile
    * PUT /api/v1/auth/profile
    */
-  async updateProfile(req: AuthRequest, res: Response, next: NextFunction) {
+  /*async updateProfile(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user._id;
       const { firstName, lastName, email } = req.body;
@@ -190,7 +318,7 @@ export class AuthController {
    * Change password
    * PUT /api/v1/auth/password
    */
-  async changePassword(req: AuthRequest, res: Response, next: NextFunction) {
+  /*async changePassword(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user._id;
       const { currentPassword, newPassword } = req.body;
@@ -232,7 +360,7 @@ export class AuthController {
    * Logout user (frontend-side token removal)
    * POST /api/v1/auth/logout
    */
-  async logout(req: Request, res: Response, next: NextFunction) {
+  /*async logout(req: Request, res: Response, next: NextFunction) {
     try {
       // In a stateless JWT system, logout is handled frontend-side
       // You can optionally implement token blacklisting here
@@ -250,7 +378,7 @@ export class AuthController {
    * Add product to wishlist
    * POST /api/v1/auth/wishlist/:productId
    */
-  async addToWishlist(req: AuthRequest, res: Response, next: NextFunction) {
+  /*async addToWishlist(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user._id;
       const { productId } = req.params;
@@ -279,7 +407,7 @@ export class AuthController {
    * Remove product from wishlist
    * DELETE /api/v1/auth/wishlist/:productId
    */
-  async removeFromWishlist(req: AuthRequest, res: Response, next: NextFunction) {
+  /*async removeFromWishlist(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user._id;
       const { productId } = req.params;
@@ -302,7 +430,7 @@ export class AuthController {
    * Get user's wishlist
    * GET /api/v1/auth/wishlist
    */
-  async getWishlist(req: AuthRequest, res: Response, next: NextFunction) {
+  /*async getWishlist(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user._id;
 
@@ -318,4 +446,4 @@ export class AuthController {
     }
   }
 }
-export default AuthController
+export default AuthController*/

@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken'
-import { IUserDocument } from '../models/auth.model.ts'
+import { IUser } from '../models/user.model'
 
 /**
  * Generates a JSON Web Token (JWT) for the authenticated user.
  * @param user The user document (or ID) to include in the token payload.
  * @returns The signed JWT string.
  */
-export const generateToken = (user: IUserDocument | string): string => {
+export const generateToken = (user: IUser | string): string => {
   // Use the user's ID as the identifier in the payload
   const id = typeof user === 'string' ? user : user.id
 

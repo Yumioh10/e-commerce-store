@@ -4,9 +4,9 @@ import { User, Package, Heart, Settings, LogOut } from 'lucide-react'
 import { motion } from 'motion/react'
 
 export const Route = createFileRoute('/account/')({
-  beforeLoad: (opts) => {
-    const context = opts.context as { auth: { isAuthenticated: boolean } }
-    if (!context.auth.isAuthenticated) {
+  beforeLoad: () => {
+    const { isAuthenticated } = useAuthStore.getState();
+    if (!isAuthenticated) {
       throw redirect({
         to: '/login',
         search: {
