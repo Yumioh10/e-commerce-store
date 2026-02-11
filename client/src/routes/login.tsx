@@ -49,7 +49,7 @@ function LoginPage() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-medical-white p-8 rounded-lg shadow-lg max-w-md w-full"
       >
-        <h2 className="text-2xl font-bold text-medical-text mb-6">Medical Professional Login</h2>
+        <h2 className="text-2xl font-bold text-medical-text mb-6">Connexion</h2>
         
         {error && (
           <div className="bg-brand-coral/10 border border-brand-coral text-brand-coral px-4 py-3 rounded-lg mb-4">
@@ -102,11 +102,6 @@ function LoginPage() {
           <Link to="/register" className="text-brand-primary hover:underline">
             Créer un Compte
           </Link>
-        </div>
-
-        {/* Medical disclaimer */}
-        <div className="mt-8 p-4 bg-brand-primary/10 rounded-lg text-xs text-medical-text-secondary">
-          <p>🔒 This portal is for licensed healthcare professionals only. Unauthorized access is prohibited.</p>
         </div>
       </motion.div>
     </div>

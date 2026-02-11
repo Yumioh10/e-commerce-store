@@ -59,7 +59,7 @@ function RegisterPage() {
          navigate({ to:'/account', replace: true});
       }, 2000);
    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed');
+      setError(err instanceof Error ? err.message : "L'inscription a échoué");
    } finally {
       setIsLoading(false);
    }
@@ -84,7 +84,7 @@ function RegisterPage() {
           </div>
         )}
         <h2 className="text-3xl font-bold text-medical-text mb-6">
-          Registration
+          Inscription
         </h2>
 
         {error && (
