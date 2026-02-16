@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Check } from 'lucide-react'
 import { motion } from 'motion/react';
 
-export const Route = createFileRoute('/checkout')({
+export const Route = createFileRoute('/Checkout')({
   component: CheckoutPage,
 });
 

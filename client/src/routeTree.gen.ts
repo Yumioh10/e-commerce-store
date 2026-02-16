@@ -13,8 +13,8 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as CheckoutRouteImport } from './routes/Checkout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RegisterIndexRouteImport } from './routes/register/index'
 import { Route as ProductsIndexRouteImport } from './routes/products/index'
@@ -44,14 +44,14 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/Checkout',
+  path: '/Checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -97,8 +97,8 @@ const AccountOrdersRoute = AccountOrdersRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/Checkout': typeof CheckoutRoute
   '/cart': typeof CartRoute
-  '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRouteWithChildren
@@ -113,8 +113,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/Checkout': typeof CheckoutRoute
   '/cart': typeof CartRoute
-  '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
@@ -129,8 +129,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/Checkout': typeof CheckoutRoute
   '/cart': typeof CartRoute
-  '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRouteWithChildren
@@ -147,8 +147,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/Checkout'
     | '/cart'
-    | '/checkout'
     | '/login'
     | '/privacy'
     | '/register'
@@ -163,8 +163,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/Checkout'
     | '/cart'
-    | '/checkout'
     | '/login'
     | '/privacy'
     | '/terms'
@@ -178,8 +178,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/Checkout'
     | '/cart'
-    | '/checkout'
     | '/login'
     | '/privacy'
     | '/register'
@@ -195,8 +195,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  CartRoute: typeof CartRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRouteWithChildren
@@ -239,18 +239,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/cart': {
       id: '/cart'
       path: '/cart'
       fullPath: '/cart'
       preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/Checkout': {
+      id: '/Checkout'
+      path: '/Checkout'
+      fullPath: '/Checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -326,8 +326,8 @@ const RegisterRouteWithChildren = RegisterRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  CartRoute: CartRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRouteWithChildren,
