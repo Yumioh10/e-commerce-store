@@ -61,7 +61,7 @@ function HomePage() {
             className="flex justify-center"
           >
             <img
-              src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80"
+              src="./src/assets/Parapharmacie.jpg"
               alt="Professional skincare"
               className="rounded-lg shadow-xl"
             />

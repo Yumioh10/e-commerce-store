@@ -1,4 +1,3 @@
-
 import { Link } from '@tanstack/react-router'
 import { ShoppingCart, User, Menu, X, LogOut } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
@@ -7,22 +6,19 @@ import Logo from '@/assets/mapara-logo.svg'
 import { useState } from 'react'
 import { categories } from '@/data/mockCategories'
 import { useAuthStore } from '@/store/authStore'
-import { SearchBar } from '@/components/SearchBar' // Import the new component
+import { SearchBar } from '@/components/SearchBar' 
 
 export const Header = () => {
   const { itemCount } = useCartStore()
-  const { user, logout } = useAuthStore()
-  const { isAuthenticated } = useAuthStore()
+  const { user, logout, isAuthenticated } = useAuthStore()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
 
   return (
     <header className="sticky top-0 z-50 bg-medical-white/95 backdrop-blur-sm border-b border-medical-gray">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20
-        ">
+        <div className="flex items-center justify-between h-20 gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
+          <Link to="/" className="flex items-center space-x-3 shrink-0">
             <img src={Logo} alt="MaparaSanté" className="w-12 h-12" />
             <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-coral to-brand-dark bg-clip-text text-transparent">
               MaparaSanté
@@ -30,17 +26,17 @@ export const Header = () => {
           </Link>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden md:block ml-auto  -1/2 transform -translate-x-1/2">
+          <div className="hidden md:flex flex-1 justify-center max-w-2xl">
             <SearchBar 
-              initialValue={searchQuery}
-              onSearch={setSearchQuery}
-              variant="compact"
+              variant="default"
               navigateTo="/products"
+              showCategories={true}
+              placeholder='Rechercher des produits...'
             />
           </div>
 
           {/* Navigation Icons */}
-          <div className="flex items-center justify-end space-x-6">
+          <div className="flex items-center space-x-2 sm:space-x-4 shrink-0">
             {/* Cart Icon */}
             <Link to='/cart' className='relative flex items-center text-medical-text hover:text-brand-primary transition-color'>
               <ShoppingCart className='w-6 h-6' />
@@ -121,15 +117,12 @@ export const Header = () => {
               </div>
               
               {/* Mobile Search */}
-              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-medical-text-secondary w-5 h-5">
+              <div className="md:hidden border-t border-medical-gray bg-medical-white px-4 py-3">
                 <SearchBar 
-                  placeholder="Rechercher des produits médicaux..."
+                  variant="default"
                   navigateTo="/products"
-                  variant="full"
-                  onSearch={(query) => {
-                    setSearchQuery(query)
-                    setIsMenuOpen(false)
-                  }}
+                  showCategories={false}
+                  placeholder="Rechercher..."
                 />
               </div>
             </div>
